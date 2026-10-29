@@ -1,3 +1,4 @@
+window.addEventListener('error',function(){document.documentElement.classList.remove('js')});
 // Paint-tube colours on the hero title
 (function(){
   var t=document.getElementById('title');if(!t)return;var c=['#FF3D81','#FFB400','#27D8A6','#6F8BFF','#FF6B2C','#fff'],s='Dopamine Art',h='',n=0;
@@ -136,3 +137,5 @@ document.getElementById('yr').textContent=new Date().getFullYear();
   document.addEventListener('click',function(e){if(h.classList.contains('open')&&!h.contains(e.target))set(false)});
   window.matchMedia('(min-width:821px)').addEventListener('change',function(){set(false)});
 })();
+
+setTimeout(function(){document.body.classList.add('veil-done')},2200);
