@@ -13,6 +13,7 @@ document.querySelectorAll('.art img').forEach(function(img){
   function bad(){img.style.display='none'}
   if(img.loading!=='lazy'&&img.complete&&img.naturalWidth===0)bad();
   img.addEventListener('error',bad);
+  img.addEventListener('load',function(){img.style.display=''});
 });
 // Lightbox
 var lb=document.getElementById('lb'),lbi=lb.querySelector('img'),lbc=document.createElement('div');lbc.className='lbc';lb.appendChild(lbc);
