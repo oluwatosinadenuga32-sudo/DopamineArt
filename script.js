@@ -139,3 +139,40 @@ document.getElementById('yr').textContent=new Date().getFullYear();
 })();
 
 setTimeout(function(){document.body.classList.add('veil-done')},2200);
+
+/* Image folder fallback: if "Images/" or "images/" fails to load, retry with the other spelling.
+   Fixes sites that work locally (Windows/Mac ignore capitals) but break on Vercel (Linux does not). */
+(function(){
+  function swap(s){return s.replace(/(^|\/)(images)\//i,function(m,p,n){return p+(n==='images'?'Images':'images')+'/'})}
+  function retry(img){
+    if(img.dataset.retried)return;
+    var s=img.getAttribute('src')||'',t=swap(s);
+    if(t===s)return;
+    img.dataset.retried='1';img.style.display='';img.src=t;
+  }
+  document.querySelectorAll('img').forEach(function(img){
+    img.addEventListener('error',function(){retry(img)});
+    if(img.loading!=='lazy'&&img.complete&&img.naturalWidth===0)retry(img);
+  });
+})();
+
+/* Debug helper: open any page with ?debug on the end (e.g. index.html?debug) on your phone.
+   A red box at the top lists every image that failed to load, so you can see exactly which files are wrong. */
+(function(){
+  if(location.search.indexOf('debug')<0)return;
+  var box=document.createElement('div');
+  box.style.cssText='position:fixed;z-index:9999;left:0;right:0;top:0;max-height:45vh;overflow:auto;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:8px;display:none';
+  document.body.appendChild(box);
+  function report(img){box.style.display='block';box.innerHTML+='FAILED: '+(img.currentSrc||img.src)+'<br>'}
+  function check(){document.querySelectorAll('img').forEach(function(img){
+    if(img.dataset.dbg)return;img.dataset.dbg=1;
+    img.addEventListener('error',function(){report(img)});
+    if(img.loading!=='lazy'&&img.complete&&img.naturalWidth===0)report(img);
+  })}
+  check();
+  window.addEventListener('load',function(){
+    setTimeout(function(){
+      if(box.style.display==='none'){box.style.display='block';box.style.background='#0a7a3d';box.textContent='No failed images detected ('+document.images.length+' checked)'}
+    },2500);
+  });
+})();
